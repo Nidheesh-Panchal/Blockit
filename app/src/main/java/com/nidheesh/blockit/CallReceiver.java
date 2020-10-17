@@ -3,18 +3,14 @@ package com.nidheesh.blockit;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
-import androidx.navigation.fragment.NavHostFragment;
-
 import com.android.internal.telephony.ITelephony;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 
 public class CallReceiver extends BroadcastReceiver {
 	String number;
@@ -45,7 +41,9 @@ public class CallReceiver extends BroadcastReceiver {
 //						telephonyService.endCall();
 						if(shouldBlock())
 						{
-							new CallActions().endCall(context);
+							CallActions callActions = new CallActions();
+							callActions.endCall(context);
+							callActions.showNotifications(context,number);
 						}
 						Log.d("BlockitLogs","Call from : " + number);
 					}

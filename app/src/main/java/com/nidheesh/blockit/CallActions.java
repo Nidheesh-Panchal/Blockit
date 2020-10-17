@@ -3,16 +3,11 @@ package com.nidheesh.blockit;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
-import android.telecom.Call;
-import android.telecom.PhoneAccountHandle;
 import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.KeyEvent;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -69,10 +64,9 @@ class CallActions {
 				Log.e("BlockitLogs", "Couldn't end call with TelephonyManager", e);
 			}
 		}
-//		showNotifications(context);
 	}
 
-	/*private void showNotifications(Context context) {
+	public void showNotifications(Context context, String number) {
 
 		if (Build.VERSION.SDK_INT >= 26) {
 			NotificationManager notificationManager =  (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -84,21 +78,16 @@ class CallActions {
 		}
 
 		Notification notify = new NotificationCompat.Builder(context, "M_CH_ID")
-				.setSmallIcon(R.drawable.ic_launcher_foreground)
-				.setContentTitle(context.getString(R.string.receiver_notify_call_rejected))
-				.setContentText(number != null ? (number.name != null ? number.name : number.number) : context.getString(R.string.receiver_notify_private_number))
-				.setPriority(NotificationCompat.PRIORITY_HIGH)
+				.setSmallIcon(R.drawable.ic_stat_name)
+				.setContentTitle("Call Blocked")
+				.setContentText(number != null ? number : "Private Number")
 				.setCategory(NotificationCompat.CATEGORY_CALL)
 				.setShowWhen(true)
 				.setAutoCancel(true)
-				.setContentIntent(PendingIntent.getActivity(context, 0, new Intent(context, BlacklistActivity.class), PendingIntent.FLAG_UPDATE_CURRENT))
-				.addPerson("tel:" + number)
-				.setGroup("rejected")
 				.setChannelId("default")
-				.setGroupSummary(true) *//* swy: fix notifications not appearing on kitkat: https://stackoverflow.com/a/37070917/674685 *//*
 				.build();
 
-		String tag = number != null ? number.number : "private";
-		NotificationManagerCompat.from(context).notify(tag, NOTIFY_REJECTED, notify);
-	}*/
+		String tag = number != null ? number : "Private";
+		NotificationManagerCompat.from(context).notify(tag, 1234, notify);
+	}
 }

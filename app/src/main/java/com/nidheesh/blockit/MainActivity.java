@@ -1,6 +1,8 @@
 package com.nidheesh.blockit;
 
+import android.Manifest;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -27,6 +29,7 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
+	private static final int PERMISSION_REQUEST_READ_PHONE_STATE = 0;
 	FileHandler mFileHandler = FileHandler.getInstance();
 	BlockList mBlockList;
 	FloatingActionButton fab;
@@ -51,6 +54,18 @@ public class MainActivity extends AppCompatActivity {
 		mBlockList = BlockList.getInstance();
 
 		listener();
+
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+			if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_DENIED ||
+					checkSelfPermission(Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_DENIED ||
+					checkSelfPermission(Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_DENIED ||
+					checkSelfPermission(Manifest.permission.ANSWER_PHONE_CALLS) == PackageManager.PERMISSION_DENIED ||
+					checkSelfPermission(Manifest.permission.MODIFY_PHONE_STATE) == PackageManager.PERMISSION_DENIED) {
+				String[] permissions = {Manifest.permission.READ_PHONE_STATE, Manifest.permission.CALL_PHONE, Manifest.permission.READ_CALL_LOG,
+						Manifest.permission.ANSWER_PHONE_CALLS, Manifest.permission.MODIFY_PHONE_STATE};
+				requestPermissions(permissions, PERMISSION_REQUEST_READ_PHONE_STATE);
+			}
+		}
 
 		fab = findViewById(R.id.fab);
 		fab.setOnClickListener(new View.OnClickListener() {
@@ -119,6 +134,21 @@ public class MainActivity extends AppCompatActivity {
 		View customNav = LayoutInflater.from(this).inflate(R.layout.actionbar, null); // layout which contains your button.
 
 		actionBar.setCustomView(customNav, lp1);
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+		switch (requestCode) {
+			case PERMISSION_REQUEST_READ_PHONE_STATE: {
+				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+					Toast.makeText(this, "Permission granted: " + PERMISSION_REQUEST_READ_PHONE_STATE, Toast.LENGTH_SHORT).show();
+				} else {
+					Toast.makeText(this, "Permission NOT granted: " + PERMISSION_REQUEST_READ_PHONE_STATE, Toast.LENGTH_SHORT).show();
+				}
+
+				return;
+			}
+		}
 	}
 	/*@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

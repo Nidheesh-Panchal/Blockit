@@ -6,6 +6,7 @@ import java.util.List;
 
 class BlockList {
 
+	public static final String TAG = "BlockitLogs";
 	private static BlockList mBlockList;
 
 	private List<String> mList;
@@ -17,10 +18,10 @@ class BlockList {
 	}
 
 	private BlockList() {
-		Log.d("BlockitLogs", "inside contructor");
+		Log.d(TAG, "Inside BlockList constructor");
 		FileHandler fileHandler = FileHandler.getInstance();
 		mList = fileHandler.getList();
-		Log.d("BlockitLogs", "inside contructor" + mList.size());
+		Log.d(TAG, "BLock list size : " + mList.size());
 	}
 
 	public List<String> getList() {
@@ -28,8 +29,10 @@ class BlockList {
 	}
 
 	public void addToList(String str) {
+		Log.d(TAG, "Adding to block list. Writing it to file.");
 		mList.add(str);
 		FileHandler fileHandler = FileHandler.getInstance();
 		fileHandler.putList(mList);
+		Log.d(TAG, "List update and written to file.");
 	}
 }

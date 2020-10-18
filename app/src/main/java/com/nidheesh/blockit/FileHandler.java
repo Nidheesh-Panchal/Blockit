@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 class FileHandler {
+	public static final String TAG = "BlockitLogs";
 	String baseDir;
 
 	String fileName = "Block List.txt";
@@ -40,16 +41,16 @@ class FileHandler {
 			if(f.createNewFile())
 			{
 				flag = true;
-				Log.d("BlockitLogs", "File created");
+				Log.d(TAG, "File created");
 			}
 			else
 			{
-				Log.d("BlockitLogs", "File already exists");
+				Log.d(TAG, "File already exists");
 			}
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			Log.println(Log.INFO,"notsave","unable to create file");
+			Log.e(TAG,"Exception : ",e);
 		}
 		return flag;
 	}
@@ -60,6 +61,9 @@ class FileHandler {
 
 		List<String> list = new ArrayList<>();
 		try {
+
+			Log.d(TAG, "Reading from file.");
+
 			BufferedReader br = new BufferedReader(new FileReader(f));
 			String line;
 
@@ -69,7 +73,7 @@ class FileHandler {
 			br.close();
 		}
 		catch (IOException e) {
-			Log.e("BlockitLogs", e.getMessage());
+			Log.e(TAG, e.getMessage(), e);
 		}
 		return list;
 	}
@@ -79,6 +83,8 @@ class FileHandler {
 		File f = new File(filePath,fileName);
 
 		try {
+			Log.d(TAG, "Writing to file.");
+
 			PrintWriter pw=new PrintWriter(new BufferedWriter(new FileWriter(f)));
 
 			for(String line : list) {
@@ -87,7 +93,7 @@ class FileHandler {
 			pw.close();
 		}
 		catch (IOException e) {
-			Log.e("BlockitLogs", e.getMessage());
+			Log.e(TAG, e.getMessage(), e);
 		}
 	}
 }

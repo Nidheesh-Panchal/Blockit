@@ -18,16 +18,23 @@ import java.lang.reflect.Method;
 
 class CallActions {
 
+	public static final String TAG = "BlockitLogs";
+
 	public void endCall(Context context) {
+
+		/*
+		For Android version above and equal to Android Pie. They have deprecated ITelephony.
+		So we have to use TelecomManager.
+		 */
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
 			TelecomManager telecomManager = (TelecomManager) context.getSystemService(Context.TELECOM_SERVICE);
 
 			try {
 				telecomManager.endCall();
-				Log.d("BlockitLogs", "Invoked 'endCall' on TelecomManager");
+				Log.d(TAG, "Invoked 'endCall' on TelecomManager");
 			} catch (Exception e) {
-				Log.e("BlockitLogs", "Couldn't end call with TelecomManager", e);
+				Log.e(TAG, "Couldn't end call with TelecomManager", e);
 			}
 		}
 		else {
@@ -39,13 +46,16 @@ class CallActions {
 				ITelephony telephony = (ITelephony) m.invoke(tm);
 
 				telephony.endCall();
+				Log.d(TAG, "Invoked 'endCall' on TelephonyManager");
 			} catch (Exception e) {
-				Log.e("BlockitLogs", "Couldn't end call with TelephonyManager", e);
+				Log.e(TAG, "Couldn't end call with TelephonyManager", e);
 			}
 		}
 	}
 
 	public void showNotifications(Context context, String number) {
+
+		Log.d(TAG, "Create notification.");
 
 		if (Build.VERSION.SDK_INT >= 26) {
 			NotificationManager notificationManager =  (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -68,5 +78,6 @@ class CallActions {
 
 		String tag = number != null ? number : "Private";
 		NotificationManagerCompat.from(context).notify(tag, 1234, notify);
+		Log.d(TAG, "Notification added.");
 	}
 }

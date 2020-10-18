@@ -7,10 +7,16 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 public class CallReceiver extends BroadcastReceiver {
+	public static final String TAG = "BlockitLogs";
 	String number;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
+
+		/*
+		Because of the permissions the Receiver get the state of the phone.
+		When a call is received this function is called.
+		 */
 
 		try {
 			String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
@@ -18,29 +24,31 @@ public class CallReceiver extends BroadcastReceiver {
 
 			if(state.equalsIgnoreCase(TelephonyManager.EXTRA_STATE_RINGING)){
 
-				Log.d("BlockitLogs", "state ringing");
+				Log.d(TAG, "State ringing");
 
 				try {
 					if (number!=null) {
+						Log.d(TAG, "Call from : " + number);
 						if(shouldBlock())
 						{
+							Log.d(TAG, "Blocking number.");
 							CallActions callActions = new CallActions();
 							callActions.endCall(context);
 							callActions.showNotifications(context,number);
 						}
-						Log.d("BlockitLogs","Call from : " + number);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
+					Log.e(TAG, "Exception : ", e);
 				}
 			}
 
 			if(state.equalsIgnoreCase(TelephonyManager.EXTRA_STATE_IDLE)){
-				Log.d("BlockitLogs", "state idle");
+				Log.d(TAG, "State idle");
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.e(TAG, "Exception : ", e);
 		}
 	}
 

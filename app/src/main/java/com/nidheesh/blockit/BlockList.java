@@ -20,12 +20,7 @@ class BlockList {
 		Log.d("BlockitLogs", "inside contructor");
 		FileHandler fileHandler = FileHandler.getInstance();
 		mList = fileHandler.getList();
-		Log.d("BlockitLogs", "inside contructor" + mList.get(0));
-	}
-
-	public void setList() {
-		FileHandler fileHandler = FileHandler.getInstance();
-		mList = fileHandler.getList();
+		Log.d("BlockitLogs", "inside contructor" + mList.size());
 	}
 
 	public List<String> getList() {

@@ -72,12 +72,19 @@ public class NotService extends NotificationListenerService {
 
 			String title=extras.getCharSequence("android.title").toString();
 			String text=extras.getCharSequence("android.text").toString();
+
 			if(title.length() > 8 && title.substring(0,8).equals("WhatsApp"))
 			{
 				return;
 			}
 
 			if(text.matches(".* messages from .* chats"))
+			{
+				return;
+			}
+
+			if(title.equalsIgnoreCase("WhatsApp") &&
+					text.matches("Checking for new messages"))
 			{
 				return;
 			}

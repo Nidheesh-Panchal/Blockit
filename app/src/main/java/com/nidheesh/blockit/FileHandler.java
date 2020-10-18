@@ -9,20 +9,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Reader;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 class FileHandler {
 	String baseDir;
-
-	public String getFileName() {
-		return fileName;
-	}
 
 	String fileName = "Block List.txt";
 
@@ -35,10 +26,6 @@ class FileHandler {
 		}
 
 		return mList;
-	}
-
-	public String getBaseDir() {
-		return baseDir;
 	}
 
 	public void setBaseDir(String dir) {
@@ -77,13 +64,11 @@ class FileHandler {
 			String line;
 
 			while ((line = br.readLine()) != null) {
-//				Log.d("BlockitLogs", line);
 				list.add(line);
 			}
 			br.close();
 		}
 		catch (IOException e) {
-			//You'll need to add proper error handling here
 			Log.e("BlockitLogs", e.getMessage());
 		}
 		return list;
@@ -102,7 +87,6 @@ class FileHandler {
 			pw.close();
 		}
 		catch (IOException e) {
-			//You'll need to add proper error handling here
 			Log.e("BlockitLogs", e.getMessage());
 		}
 	}

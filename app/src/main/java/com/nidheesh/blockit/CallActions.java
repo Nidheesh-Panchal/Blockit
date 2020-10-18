@@ -19,28 +19,7 @@ import java.lang.reflect.Method;
 class CallActions {
 
 	public void endCall(Context context) {
-		/*try {
-			Log.d("BlockitLogs", "Sending key event");
-			Runtime.getRuntime().exec(Integer.toString(KeyEvent.KEYCODE_MEDIA_PLAY));
-			Log.d("BlockitLogs", "cut call successful");
-		}
-		catch(Exception e) {
 
-			String enforcedPerm = "android.permission.CALL_PRIVILEGED";
-			Intent btnDown = new Intent(Intent.ACTION_MEDIA_BUTTON).putExtra(
-					Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN,
-							KeyEvent.KEYCODE_HEADSETHOOK));
-			Intent btnUp = new Intent(Intent.ACTION_MEDIA_BUTTON).putExtra(
-					Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP,
-							KeyEvent.KEYCODE_HEADSETHOOK));
-
-			Log.d("BlockitLogs", context.toString());
-
-			context.sendOrderedBroadcast(btnDown, enforcedPerm);
-			context.sendOrderedBroadcast(btnUp, enforcedPerm);
-
-			Log.d("BlockitLogs", "Cant cut call" + e.getMessage());
-		}*/
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
 			TelecomManager telecomManager = (TelecomManager) context.getSystemService(Context.TELECOM_SERVICE);
 

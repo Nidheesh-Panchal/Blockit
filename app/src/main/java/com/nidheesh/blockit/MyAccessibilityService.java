@@ -14,16 +14,6 @@ public class MyAccessibilityService extends AccessibilityService {
 			Log.d("BlockitLogs", String.valueOf(event.getText()));
 
 			startService(new Intent(this, NotService.class));
-
-			/*if (event.getPackageName().toString().equals("com.whatsapp")){
-				StringBuilder message = new StringBuilder();
-				if (!event.getText().isEmpty()) {
-					for (CharSequence subText : event.getText()) {
-						message.append(subText);
-					}
-				}
-				Log.d("BlockitLogs", "WhatsApp message");
-			}*/
 		}
 	}
 

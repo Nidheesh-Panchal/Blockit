@@ -5,87 +5,50 @@ import android.content.Context;
 import android.content.Intent;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.widget.Toast;
-
-import com.android.internal.telephony.ITelephony;
-
-import java.io.IOException;
 
 public class CallReceiver extends BroadcastReceiver {
+	public static final String TAG = "BlockitLogs";
 	String number;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		/*TelephonyManager telephony = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-		PhoneCallStateListener customPhoneListener = new PhoneCallStateListener(context);
-		telephony.listen(customPhoneListener, PhoneStateListener.LISTEN_CALL_STATE);*/
 
-		ITelephony telephonyService;
+		/*
+		Because of the permissions the Receiver get the state of the phone.
+		When a call is received this function is called.
+		 */
+
 		try {
 			String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
-			 number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
+			number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
 
 			if(state.equalsIgnoreCase(TelephonyManager.EXTRA_STATE_RINGING)){
-				Log.d("BlockitLogs", "state ringing");
 
-				TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+				Log.d(TAG, "State ringing");
+
 				try {
-					/*Class clazz = Class.forName(tm.getClass().getName());
-					Method m = clazz.getDeclaredMethod("getITelephony");
-
-					m.setAccessible(true);
-					telephonyService = (ITelephony) m.invoke(tm);*/
-
 					if (number!=null) {
-//						telephonyService.endCall();
+						Log.d(TAG, "Call from : " + number);
 						if(shouldBlock())
 						{
+							Log.d(TAG, "Blocking number.");
 							CallActions callActions = new CallActions();
 							callActions.endCall(context);
 							callActions.showNotifications(context,number);
 						}
-						Log.d("BlockitLogs","Call from : " + number);
 					}
-
 				} catch (Exception e) {
 					e.printStackTrace();
+					Log.e(TAG, "Exception : ", e);
 				}
-
-				Toast.makeText(context, "Ring " + number, Toast.LENGTH_SHORT).show();
-
 			}
-			if(state.equalsIgnoreCase(TelephonyManager.EXTRA_STATE_OFFHOOK)){
-				Toast.makeText(context, "Answered " + number, Toast.LENGTH_SHORT).show();
-			}
+
 			if(state.equalsIgnoreCase(TelephonyManager.EXTRA_STATE_IDLE)){
-				Toast.makeText(context, "Idle "+ number, Toast.LENGTH_SHORT).show();
-				Log.d("BlockitLogs", "state idle");
+				Log.d(TAG, "State idle");
 			}
+
 		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void cutCall() {
-		try {
-			Log.d("BlockitLogs", "Sending key event");
-			Runtime.getRuntime().exec(Integer.toString(KeyEvent.KEYCODE_HEADSETHOOK));
-			Log.d("BlockitLogs", "cut call successful");
-		} catch (IOException e) {
-			// Runtime.exec(String) had an I/O problem, try to fall back
-			/*String enforcedPerm = "android.permission.CALL_PRIVILEGED";
-			Intent btnDown = new Intent(Intent.ACTION_MEDIA_BUTTON).putExtra(
-					Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN,
-							KeyEvent.KEYCODE_HEADSETHOOK));
-			Intent btnUp = new Intent(Intent.ACTION_MEDIA_BUTTON).putExtra(
-					Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP,
-							KeyEvent.KEYCODE_HEADSETHOOK));
-
-			mContext.sendOrderedBroadcast(btnDown, enforcedPerm);
-			mContext.sendOrderedBroadcast(btnUp, enforcedPerm);*/
-
-			Log.d("BlockitLogs", "Cant cut call" + e.getMessage());
+			Log.e(TAG, "Exception : ", e);
 		}
 	}
 

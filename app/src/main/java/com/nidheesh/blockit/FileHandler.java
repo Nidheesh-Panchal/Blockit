@@ -9,20 +9,12 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Reader;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 class FileHandler {
+	public static final String TAG = "BlockitLogs";
 	String baseDir;
-
-	public String getFileName() {
-		return fileName;
-	}
 
 	String fileName = "Block List.txt";
 
@@ -37,10 +29,6 @@ class FileHandler {
 		return mList;
 	}
 
-	public String getBaseDir() {
-		return baseDir;
-	}
-
 	public void setBaseDir(String dir) {
 		baseDir = dir;
 	}
@@ -53,16 +41,16 @@ class FileHandler {
 			if(f.createNewFile())
 			{
 				flag = true;
-				Log.d("BlockitLogs", "File created");
+				Log.d(TAG, "File created");
 			}
 			else
 			{
-				Log.d("BlockitLogs", "File already exists");
+				Log.d(TAG, "File already exists");
 			}
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			Log.println(Log.INFO,"notsave","unable to create file");
+			Log.e(TAG,"Exception : ",e);
 		}
 		return flag;
 	}
@@ -73,18 +61,19 @@ class FileHandler {
 
 		List<String> list = new ArrayList<>();
 		try {
+
+			Log.d(TAG, "Reading from file.");
+
 			BufferedReader br = new BufferedReader(new FileReader(f));
 			String line;
 
 			while ((line = br.readLine()) != null) {
-//				Log.d("BlockitLogs", line);
 				list.add(line);
 			}
 			br.close();
 		}
 		catch (IOException e) {
-			//You'll need to add proper error handling here
-			Log.e("BlockitLogs", e.getMessage());
+			Log.e(TAG, e.getMessage(), e);
 		}
 		return list;
 	}
@@ -94,6 +83,8 @@ class FileHandler {
 		File f = new File(filePath,fileName);
 
 		try {
+			Log.d(TAG, "Writing to file.");
+
 			PrintWriter pw=new PrintWriter(new BufferedWriter(new FileWriter(f)));
 
 			for(String line : list) {
@@ -102,8 +93,7 @@ class FileHandler {
 			pw.close();
 		}
 		catch (IOException e) {
-			//You'll need to add proper error handling here
-			Log.e("BlockitLogs", e.getMessage());
+			Log.e(TAG, e.getMessage(), e);
 		}
 	}
 }

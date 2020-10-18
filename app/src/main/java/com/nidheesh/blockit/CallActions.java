@@ -18,37 +18,23 @@ import java.lang.reflect.Method;
 
 class CallActions {
 
+	public static final String TAG = "BlockitLogs";
+
 	public void endCall(Context context) {
-		/*try {
-			Log.d("BlockitLogs", "Sending key event");
-			Runtime.getRuntime().exec(Integer.toString(KeyEvent.KEYCODE_MEDIA_PLAY));
-			Log.d("BlockitLogs", "cut call successful");
-		}
-		catch(Exception e) {
 
-			String enforcedPerm = "android.permission.CALL_PRIVILEGED";
-			Intent btnDown = new Intent(Intent.ACTION_MEDIA_BUTTON).putExtra(
-					Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN,
-							KeyEvent.KEYCODE_HEADSETHOOK));
-			Intent btnUp = new Intent(Intent.ACTION_MEDIA_BUTTON).putExtra(
-					Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP,
-							KeyEvent.KEYCODE_HEADSETHOOK));
+		/*
+		For Android version above and equal to Android Pie. They have deprecated ITelephony.
+		So we have to use TelecomManager.
+		 */
 
-			Log.d("BlockitLogs", context.toString());
-
-			context.sendOrderedBroadcast(btnDown, enforcedPerm);
-			context.sendOrderedBroadcast(btnUp, enforcedPerm);
-
-			Log.d("BlockitLogs", "Cant cut call" + e.getMessage());
-		}*/
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
 			TelecomManager telecomManager = (TelecomManager) context.getSystemService(Context.TELECOM_SERVICE);
 
 			try {
 				telecomManager.endCall();
-				Log.d("BlockitLogs", "Invoked 'endCall' on TelecomManager");
+				Log.d(TAG, "Invoked 'endCall' on TelecomManager");
 			} catch (Exception e) {
-				Log.e("BlockitLogs", "Couldn't end call with TelecomManager", e);
+				Log.e(TAG, "Couldn't end call with TelecomManager", e);
 			}
 		}
 		else {
@@ -60,13 +46,16 @@ class CallActions {
 				ITelephony telephony = (ITelephony) m.invoke(tm);
 
 				telephony.endCall();
+				Log.d(TAG, "Invoked 'endCall' on TelephonyManager");
 			} catch (Exception e) {
-				Log.e("BlockitLogs", "Couldn't end call with TelephonyManager", e);
+				Log.e(TAG, "Couldn't end call with TelephonyManager", e);
 			}
 		}
 	}
 
 	public void showNotifications(Context context, String number) {
+
+		Log.d(TAG, "Create notification.");
 
 		if (Build.VERSION.SDK_INT >= 26) {
 			NotificationManager notificationManager =  (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -89,5 +78,6 @@ class CallActions {
 
 		String tag = number != null ? number : "Private";
 		NotificationManagerCompat.from(context).notify(tag, 1234, notify);
+		Log.d(TAG, "Notification added.");
 	}
 }

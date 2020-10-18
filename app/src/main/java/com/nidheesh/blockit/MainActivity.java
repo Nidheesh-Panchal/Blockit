@@ -1,31 +1,30 @@
 package com.nidheesh.blockit;
 
 import android.Manifest;
+import android.accessibilityservice.AccessibilityService;
+import android.accessibilityservice.AccessibilityServiceInfo;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.content.pm.ServiceInfo;
 import android.os.Bundle;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.accessibility.AccessibilityManager;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Toast;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,6 +52,10 @@ public class MainActivity extends AppCompatActivity {
 		mFileHandler.checkFileCreated();
 		mBlockList = BlockList.getInstance();
 
+		Log.d("BlockitLogs", String.valueOf(isAccessibilityServiceEnabled(this, MyAccessibilityService.class)));
+
+		Toast.makeText(this, "Enable Notification and Accessibility settings.", Toast.LENGTH_LONG);
+
 		listener();
 
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -71,10 +74,7 @@ public class MainActivity extends AppCompatActivity {
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-//				Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//						.setAction("Action", null).show();
-//				Toast.makeText(getApplicationContext(), "Add block number", Toast.LENGTH_SHORT).show();
-//				final EditText editText = new EditText(MainActivity.this);
+
 				LayoutInflater layoutinflater = getLayoutInflater();
 				View view1 = layoutinflater.inflate(R.layout.addnumber, null);
 				final EditText editText = (EditText)view1.findViewById(R.id.editText);
@@ -94,6 +94,32 @@ public class MainActivity extends AppCompatActivity {
 				alertDialog.show();
 			}
 		});
+	}
+
+	//TODO: Unable to prompt up the settings from here. Find something to do this.
+	/*public void requestPermission() {
+		Intent requestIntent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+		requestIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(requestIntent);
+	}
+	public void accessibility()
+	{
+		Intent access = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+		access.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(access);
+	}*/
+
+	public static boolean isAccessibilityServiceEnabled(Context context, Class<? extends AccessibilityService> service) {
+		AccessibilityManager am = (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
+		List<AccessibilityServiceInfo> enabledServices = am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
+
+		for (AccessibilityServiceInfo enabledService : enabledServices) {
+			ServiceInfo enabledServiceInfo = enabledService.getResolveInfo().serviceInfo;
+			if (enabledServiceInfo.packageName.equals(context.getPackageName()) && enabledServiceInfo.name.equals(service.getName()))
+				return true;
+		}
+
+		return false;
 	}
 
 	private void listener() {
@@ -130,65 +156,8 @@ public class MainActivity extends AppCompatActivity {
 
 		Toolbar.LayoutParams lp1 = new Toolbar.LayoutParams(Toolbar.LayoutParams.MATCH_PARENT, Toolbar.LayoutParams.MATCH_PARENT);
 
-//		ActionBar.LayoutParams lp1 = new ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT);
 		View customNav = LayoutInflater.from(this).inflate(R.layout.actionbar, null); // layout which contains your button.
 
 		actionBar.setCustomView(customNav, lp1);
 	}
-
-	@Override
-	public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-		switch (requestCode) {
-			case PERMISSION_REQUEST_READ_PHONE_STATE: {
-				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					Toast.makeText(this, "Permission granted: " + PERMISSION_REQUEST_READ_PHONE_STATE, Toast.LENGTH_SHORT).show();
-				} else {
-					Toast.makeText(this, "Permission NOT granted: " + PERMISSION_REQUEST_READ_PHONE_STATE, Toast.LENGTH_SHORT).show();
-				}
-
-				return;
-			}
-		}
-	}
-	/*@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.menu_main, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-
-		//noinspection SimplifiableIfStatement
-		if (id == R.id.action_settings) {
-			Toast.makeText(getApplicationContext(), "Settings", Toast.LENGTH_SHORT).show();
-			NavController navController = Navigation.findNavController(MainActivity.this, R.id.nav_host_fragment);
-			navController.navigate(R.id.action_SecondFragment_to_BlockFragment);
-			fab.show();
-			toolbar.removeView(confirm);
-			return true;
-		}
-
-		if (id == R.id.action_delete) {
-			Toast.makeText(getApplicationContext(), "Select items to be deleted", Toast.LENGTH_SHORT).show();
-			*//*BlockFragment fragment =  (BlockFragment) getSupportFragmentManager().findFragmentById(R.id.BlockFragment);
-
-			Log.d("BlockitLogs", "fragment : " + fragment);
-			if(fragment == null)
-				fragment.changeView();*//*
-			fab.hide();
-			toolbar.addView(confirm);
-			NavController navController = Navigation.findNavController(MainActivity.this, R.id.nav_host_fragment);
-			navController.navigate(R.id.action_BlockFragment_to_SecondFragment);
-			return true;
-		}
-
-		return super.onOptionsItemSelected(item);
-	}*/
-
 }

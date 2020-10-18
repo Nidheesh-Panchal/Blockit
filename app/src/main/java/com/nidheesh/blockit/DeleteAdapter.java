@@ -10,7 +10,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,14 +80,6 @@ class DeleteAdapter extends RecyclerView.Adapter<DeleteAdapter.ViewHolder>{
 			isSelectedAll = false;
 			allUnselect = false;
 		}
-
-//		if(holder.mCheckBox.isChecked()) {
-//			Log.d("BlockitLogs", "Selected : " + blockedCall);
-//			map.put(blockedCall, true);
-//		}
-//		else if(holder.mCheckBox.isChecked()){
-//			map.put(blockedCall, false);
-//		}
 	}
 
 	@Override

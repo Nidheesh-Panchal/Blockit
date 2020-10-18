@@ -3,24 +3,19 @@ package com.nidheesh.blockit;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BlockFragment extends Fragment {
 
+	public static final String TAG = "BlockitLogs";
 	private RecyclerView mRecyclerView;
 	private LinearLayoutManager mLinearLayoutManager;
 
@@ -32,57 +27,47 @@ public class BlockFragment extends Fragment {
 			LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState
 	) {
-		// Inflate the layout for this fragment
 
+		/*
+		When this view is called this view is created first.
+		So first we need to get the root view and inflate it with the fragment we want.
+
+		Then add the linear layout to recyclerview and then set Adapter to it so that the
+		list items are taken care of automatically.
+		*/
 
 		View rootView = inflater.inflate(R.layout.block_fragment, container, false);
 
-		Log.d("BlockitLogs", "Getting layout manager");
+		Log.d(TAG, "Getting layout manager");
 		mLinearLayoutManager = new LinearLayoutManager(getActivity());
 
 		mRecyclerView = rootView.findViewById(R.id.recyclerView);
 		mRecyclerView.setLayoutManager(mLinearLayoutManager);
-		Log.d("BlockitLogs", "Calling init");
+		Log.d(TAG, "Calling init");
 		init();
 
+		/*
+		Always remember to return this rootView.
+		 */
 		return rootView;
 	}
 
 	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		/*view.findViewById(R.id.action_delete).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				NavHostFragment.findNavController(BlockFragment.this)
-						.navigate(R.id.action_FirstFragment_to_SecondFragment);
-			}
-		});*/
-
 	}
 
 	private void init(){
-//		FileHandler fl = FileHandler.getInstance();
-//		Log.d("BlockitLogs", "Base Dir : " + fl.getBaseDir());
-//
-//		blockList=new ArrayList<String>();
-//
-//		// Initiating Adapter
-//		System.out.println("------------Context : " + getContext());
-//
-//
-//		// Adding some demo data(Call Objects).
-//		// You can get them from your data server
-//		blockList.add(new String("John"));
-//		blockList.add(new String("Rob"));
+		Log.d(TAG, "Getting the locally saved list.");
 		BlockList blockList = BlockList.getInstance();
 		mList = blockList.getList();
 
+		Log.d(TAG, "Get DeleteAdapter and set it to the recyclerview.");
 		mBlockAdapter=DeleteAdapter.getInstance();
-		// Set items to adapter
 		mBlockAdapter.setBlockList(mList);
 
 		mRecyclerView.setAdapter(mBlockAdapter);
 		mBlockAdapter.notifyDataSetChanged();
+		Log.d(TAG, "Adapter added.");
 	}
 }

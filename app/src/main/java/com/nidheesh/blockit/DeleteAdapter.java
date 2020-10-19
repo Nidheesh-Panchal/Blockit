@@ -17,6 +17,7 @@ import java.util.Map;
 
 class DeleteAdapter extends RecyclerView.Adapter<DeleteAdapter.ViewHolder>{
 
+	public static final String TAG = "BlockitLogs";
 	private static DeleteAdapter sDeleteAdapter;
 
 	public static DeleteAdapter getInstance() {
@@ -31,31 +32,44 @@ class DeleteAdapter extends RecyclerView.Adapter<DeleteAdapter.ViewHolder>{
 	private Boolean isSelectedAll = false;
 	private Boolean allUnselect = false;
 
+	/*
+	This is and adapter for the RecyclerView.
+	The blocklist passed here somehow references to the real Block list instance allowing
+	to make changes here and reflect it in the actual list.
+	 */
+
 	public void setBlockList(List<String> blockList) {
 		this.blockList = blockList;
 	}
 
 	public void deleteList() {
+
 		for(String key:map.keySet()) {
 			if(map.get(key)) {
+				Log.d(TAG,"Removing from block list : " + key);
 				blockList.remove(key);
 			}
 		}
+		Log.d(TAG,"Updating view.");
 		map.clear();
 		unselectAll();
 	}
 
 	public void selectAll() {
-		Log.d("BlockitLogs","Select All");
+		Log.d(TAG,"Select All");
 		isSelectedAll=true;
 		notifyDataSetChanged();
 	}
 
 	public void unselectAll(){
-		Log.d("BlockitLogs","Unselect All");
+		Log.d(TAG,"Unselect All");
 		allUnselect=true;
 		notifyDataSetChanged();
 	}
+
+	/*
+	Add layout of a single item you want in the RecyclerView.
+	 */
 
 	@NonNull
 	@Override
@@ -67,11 +81,15 @@ class DeleteAdapter extends RecyclerView.Adapter<DeleteAdapter.ViewHolder>{
 		return new ViewHolder(v);
 	}
 
+	/*
+	onBindViewHolder called when there is notifyDataSetChanged() or any update.
+	 */
+
 	@Override
 	public void onBindViewHolder(@NonNull DeleteAdapter.ViewHolder holder, int position) {
 		String blockedCall = blockList.get(position);
 		holder.showBlockedDetails(blockedCall);
-		Log.d("BlockitLogs", "changed checkbox : " + blockedCall + " " + isSelectedAll + allUnselect);
+
 		if (allUnselect)
 			holder.mCheckBox.setChecked(false);
 		else if(isSelectedAll)
@@ -92,6 +110,10 @@ class DeleteAdapter extends RecyclerView.Adapter<DeleteAdapter.ViewHolder>{
 		private TextView blockCallTextView;
 		private CheckBox mCheckBox;
 
+		/*
+		For each item in RecyclerView there are 2 things which we track.
+		 */
+
 		public ViewHolder(@NonNull View itemView) {
 			super(itemView);
 
@@ -101,11 +123,11 @@ class DeleteAdapter extends RecyclerView.Adapter<DeleteAdapter.ViewHolder>{
 				@Override
 				public void onClick(View v) {
 					if(mCheckBox.isChecked()) {
-						Log.d("BlockitLogs", "Selected : " + blockCallTextView.getText());
+						Log.d(TAG, "Selected : " + blockCallTextView.getText());
 						map.put(String.valueOf(blockCallTextView.getText()),true);
 					}
 					else if(!mCheckBox.isChecked()) {
-						Log.d("BlockitLogs", "Unselect : " + blockCallTextView.getText());
+						Log.d(TAG, "Unselect : " + blockCallTextView.getText());
 						map.put(String.valueOf(blockCallTextView.getText()),false);
 					}
 				}

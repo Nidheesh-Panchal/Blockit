@@ -17,6 +17,7 @@ import java.util.Date;
 
 public class NotService extends NotificationListenerService {
 
+	public static final String TAG = "BlockitLogs";
 	String filePath;
 	String fileName;
 	File f;
@@ -27,13 +28,13 @@ public class NotService extends NotificationListenerService {
 	{
 		super.onCreate();
 		baseDir = getExternalFilesDir(null)+File.separator+"NotSaving";
-		Log.d("BlockitLogs","created service");
+		Log.d(TAG,"Created service");
 	}
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
-		Log.d("BlockitLogs","Timer started onStartCommand");
+		Log.d(TAG,"onStartCommand");
 		return START_STICKY;
 	}
 
@@ -41,22 +42,26 @@ public class NotService extends NotificationListenerService {
 	public void onDestroy()
 	{
 		super.onDestroy();
-		Log.d("BlockitLogs","onDestroy");
+		Log.d(TAG,"onDestroy");
 	}
 
 	@Override
 	public void onNotificationPosted(StatusBarNotification sbn)
 	{
-		Log.d("BlockitLogs","got notification");
+		Log.d(TAG,"Received notification");
 		String pakagename=sbn.getPackageName();
-		Log.d("BlockitLogs",sbn.getPackageName());
+		Log.d(TAG,sbn.getPackageName());
 
 		if(pakagename.equals("com.whatsapp"))
 		{
+			Log.d(TAG, "Notification from WhatsApp");
 			filePath = baseDir + File.separator + "WhatsApp";
+
+			Log.d(TAG, "Creating folders if not already exist.");
 			File createFolder=new File(filePath);
 			createFolder.mkdirs();
-			Log.d("BlockitLogs","creating folders");
+
+			Log.d(TAG, "Creating file if not already exist.");
 			String temp= DateFormat.getDateTimeInstance().format(new Date()).substring(0,11);
 			fileName = temp+".txt";
 			filePath += File.separator;
@@ -65,13 +70,15 @@ public class NotService extends NotificationListenerService {
 				f.createNewFile();
 			} catch (IOException e) {
 				e.printStackTrace();
-				Log.println(Log.INFO,"BlockitLogs","unable to create file");
+				Log.e(TAG, "Exception : ", e);
 			}
 
 			Bundle extras=sbn.getNotification().extras;
 
 			String title=extras.getCharSequence("android.title").toString();
 			String text=extras.getCharSequence("android.text").toString();
+
+			Log.d(TAG, "Ignoring few messages that are not required.");
 
 			if(title.length() > 8 && title.substring(0,8).equals("WhatsApp"))
 			{
@@ -100,7 +107,8 @@ public class NotService extends NotificationListenerService {
 			SimpleDateFormat format=new SimpleDateFormat("hh:mm a");
 			String time = format.format(date);
 
-			Log.d("BlockitLogs","Time : " + time);
+			Log.d(TAG,"Time : " + time);
+			Log.d(TAG,"Saving to file");
 
 			f=new File(filePath,fileName);
 			try {
@@ -112,16 +120,22 @@ public class NotService extends NotificationListenerService {
 				pw.close();
 			} catch (IOException e) {
 				e.printStackTrace();
+				Log.e(TAG, "Exception : ", e);
 			}
-			Log.d("BlockitLogs","saving into file");
+
 		}
 
 		else if(pakagename.equals("com.instagram.android"))
 		{
+			Log.d(TAG, "Notification from Instagram");
+
 			filePath = baseDir + File.separator + "Instagram";
+
+			Log.d(TAG, "Creating folders if not already exist.");
 			File createFolder=new File(filePath);
 			createFolder.mkdirs();
-			Log.d("BlockitLogs","creating folders");
+
+			Log.d(TAG, "Creating file if not already exist.");
 			String temp= DateFormat.getDateTimeInstance().format(new Date()).substring(0,11);
 			fileName = temp+".txt";
 			filePath += File.separator;
@@ -130,12 +144,14 @@ public class NotService extends NotificationListenerService {
 				f.createNewFile();
 			} catch (IOException e) {
 				e.printStackTrace();
-				Log.println(Log.INFO,"BlockitLogs","unable to create file");
+				Log.e(TAG,"Exception : ", e);
 			}
 
 			Bundle extras=sbn.getNotification().extras;
 			String title=extras.getCharSequence("android.title").toString();
 			String text=extras.getCharSequence("android.text").toString();
+
+			Log.d(TAG, "Ignoring few messages that are not required.");
 
 			if(text.endsWith("liked your post."))
 			{
@@ -148,7 +164,8 @@ public class NotService extends NotificationListenerService {
 			SimpleDateFormat format=new SimpleDateFormat("hh:mm a");
 			String time = format.format(date);
 
-			Log.d("BlockitLogs","Time : " + time);
+			Log.d(TAG,"Time : " + time);
+			Log.d(TAG,"Saving to file");
 
 			f=new File(filePath,fileName);
 			try {
@@ -160,14 +177,14 @@ public class NotService extends NotificationListenerService {
 				pw.close();
 			} catch (IOException e) {
 				e.printStackTrace();
+				Log.e(TAG, "Exception : ", e);
 			}
-			Log.d("BlockitLogs","saving into file");
 		}
 	}
 
 	@Override
 	public void onNotificationRemoved(StatusBarNotification sbn)
 	{
-		Log.d("BlockitLogs","notification removed");
+
 	}
 }

@@ -29,6 +29,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
 	private static final int PERMISSION_REQUEST_READ_PHONE_STATE = 0;
+	public static final String TAG = "BlockitLogs";
 	FileHandler mFileHandler = FileHandler.getInstance();
 	BlockList mBlockList;
 	FloatingActionButton fab;
@@ -42,22 +43,29 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		Log.d(TAG, "App started.");
+		Log.d(TAG, "Set action bar.");
+
 		toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
 		setupActionBar();
 
+		Log.d(TAG, "Set base directory for block list file.");
 		mFileHandler.setBaseDir(getExternalFilesDir(null).toString());
 
+		Log.d(TAG, "Check if file exists.");
 		mFileHandler.checkFileCreated();
 		mBlockList = BlockList.getInstance();
 
-		Log.d("BlockitLogs", String.valueOf(isAccessibilityServiceEnabled(this, MyAccessibilityService.class)));
+		if(!isAccessibilityServiceEnabled(this, MyAccessibilityService.class))
+			Toast.makeText(this, "Enable Notification and Accessibility settings.",
+					Toast.LENGTH_LONG).show();
 
-		Toast.makeText(this, "Enable Notification and Accessibility settings.", Toast.LENGTH_LONG);
-
+		Log.d(TAG, "Set listener for action bar.");
 		listener();
 
+		Log.d(TAG, "Check for all required permissions.");
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
 			if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_DENIED ||
 					checkSelfPermission(Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_DENIED ||
@@ -70,15 +78,18 @@ public class MainActivity extends AppCompatActivity {
 			}
 		}
 
+		Log.d(TAG, "Add floating action button and its listener.");
 		fab = findViewById(R.id.fab);
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 
+				Log.d(TAG, "Add layout for adding number to block list.");
 				LayoutInflater layoutinflater = getLayoutInflater();
 				View view1 = layoutinflater.inflate(R.layout.addnumber, null);
 				final EditText editText = (EditText)view1.findViewById(R.id.editText);
 
+				Log.d(TAG, "Create and open alert dialog to input number.");
 				AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this, R.style.AddDialogTheme);
 				alertDialog.setTitle("Block a number. NOW!");
 				alertDialog.setMessage("Add a number you want to block. Add \"*\" at the end if you want to block all the numbers having that prefix");
@@ -86,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 				alertDialog.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-
+						Log.d(TAG, "Adding number to the list : " + editText.getText());
 						mBlockList.addToList(String.valueOf(editText.getText()));
 					}
 				});
@@ -154,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
 		actionBar.setDisplayShowCustomEnabled(true);
 		actionBar.setDisplayShowHomeEnabled(false);
 
+		Log.d(TAG, "Getting layout for toolbar from layout resources.");
 		Toolbar.LayoutParams lp1 = new Toolbar.LayoutParams(Toolbar.LayoutParams.MATCH_PARENT, Toolbar.LayoutParams.MATCH_PARENT);
 
 		View customNav = LayoutInflater.from(this).inflate(R.layout.actionbar, null); // layout which contains your button.

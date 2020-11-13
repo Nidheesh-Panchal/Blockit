@@ -27,6 +27,12 @@
 			</intent-filter>
 		</receiver>
 
+		<receiver android:name=".SMSBroadcastReceiver">
+			<intent-filter>
+				<action android:name="android.provider.Telephony.SMS_RECEIVED"></action>
+			</intent-filter>
+		</receiver>
+
 		<service android:name=".NotService"
 			android:stopWithTask="true"
 			android:foregroundServiceType="dataSync"
@@ -62,5 +68,7 @@
 	<uses-permission android:name="android.permission.ANSWER_PHONE_CALLS"/>
 	<uses-permission android:name="android.permission.MODIFY_PHONE_STATE"
 		tools:ignore="ProtectedPermissions" />
+
+	<uses-permission android:name="android.permission.RECEIVE_SMS"></uses-permission>
 
 </manifest>

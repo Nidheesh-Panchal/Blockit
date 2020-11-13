@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/add_number"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:layout_margin="5dp"
+	android:background="@color/background">
+
+	<EditText
+		android:id="@+id/sms_edit_text"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_marginLeft="50dp"
+		android:layout_marginRight="50dp"
+		android:backgroundTint="@color/text"
+		android:textColor="@color/text"
+		android:textColorHint="@color/text"
+		android:textCursorDrawable="@color/text"
+		android:textSize="18sp" />
+
+</LinearLayout>

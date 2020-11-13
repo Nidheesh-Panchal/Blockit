@@ -180,6 +180,7 @@ public class NotService extends NotificationListenerService {
 				Log.e(TAG, "Exception : ", e);
 			}
 		}
+		stopSelf();
 	}
 
 	@Override

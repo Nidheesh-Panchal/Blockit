@@ -1,16 +1,20 @@
 package com.nidheesh.blockit.sms;
 
-import android.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.nidheesh.blockit.FragmentView;
 import com.nidheesh.blockit.R;
 
 import java.util.List;
@@ -19,6 +23,7 @@ public class SmsFragment extends Fragment {
 	public static final String TAG = "BlockitLogs";
 	private RecyclerView mRecyclerView;
 	private LinearLayoutManager mLinearLayoutManager;
+	private Button switchFragment;
 
 	private List<String> mList;
 	private SmsAdapter mSmsAdapter;
@@ -39,10 +44,21 @@ public class SmsFragment extends Fragment {
 
 		View rootView = inflater.inflate(R.layout.sms_fragment, container, false);
 
+		switchFragment = rootView.findViewById(R.id.switch_to_block);
+		switchFragment.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				navigate();
+			}
+		});
+
+		TextView tv = (TextView)getActivity().findViewById(R.id.fragment_view);
+		tv.setText("Blocked SMS");
+
 		Log.d(TAG, "Getting layout manager");
 		mLinearLayoutManager = new LinearLayoutManager(getActivity());
 
-		mRecyclerView = rootView.findViewById(R.id.recyclerView);
+		mRecyclerView = rootView.findViewById(R.id.sms_recycler_view);
 		mRecyclerView.setLayoutManager(mLinearLayoutManager);
 		Log.d(TAG, "Calling init");
 		init();
@@ -56,6 +72,7 @@ public class SmsFragment extends Fragment {
 	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
+		FragmentView.getInstance().setTag("SmsFragment");
 	}
 
 	private void init(){
@@ -70,5 +87,10 @@ public class SmsFragment extends Fragment {
 		mRecyclerView.setAdapter(mSmsAdapter);
 		mSmsAdapter.notifyDataSetChanged();
 		Log.d(TAG, "Adapter added.");
+	}
+
+	public void navigate() {
+		NavHostFragment.findNavController(SmsFragment.this)
+			.navigate(R.id.action_SmsFragment_to_BlockFragment);
 	}
 }

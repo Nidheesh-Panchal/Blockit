@@ -11,18 +11,18 @@
 		android:label="@string/block_fragment_label"
 		tools:layout="@layout/block_fragment">
 
-<!--		<action-->
-<!--			android:id="@+id/action_BlockFragment_to_SecondFragment"-->
-<!--			app:destination="@id/SecondFragment" />-->
+		<action
+			android:id="@+id/action_BlockFragment_to_SmsFragment"
+			app:destination="@id/SmsFragment" />
 	</fragment>
-<!--	<fragment-->
-<!--		android:id="@+id/SecondFragment"-->
-<!--		android:name="com.nidheesh.blockit.SecondFragment"-->
-<!--		android:label="@string/second_fragment_label"-->
-<!--		tools:layout="@layout/fragment_second">-->
+	<fragment
+		android:id="@+id/SmsFragment"
+		android:name="com.nidheesh.blockit.sms.SmsFragment"
+		android:label="@string/sms_fragment_label"
+		tools:layout="@layout/sms_fragment">
 
-<!--		<action-->
-<!--			android:id="@+id/action_SecondFragment_to_BlockFragment"-->
-<!--			app:destination="@id/BlockFragment" />-->
-<!--	</fragment>-->
+		<action
+			android:id="@+id/action_SmsFragment_to_BlockFragment"
+			app:destination="@id/BlockFragment" />
+	</fragment>
 </navigation>

@@ -3,13 +3,16 @@ package com.nidheesh.blockit;
 import android.Manifest;
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.CheckBox;
@@ -21,7 +24,9 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.nidheesh.blockit.sms.SmsAdapter;
@@ -49,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
 
 	ImageView switchFragment;
 
+	FragmentView mFragmentView;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -61,6 +68,10 @@ public class MainActivity extends AppCompatActivity {
 		setSupportActionBar(toolbar);
 
 		setupActionBar();
+
+		Log.d(TAG, "Set Fragment View.");
+		mFragmentView = FragmentView.getInstance();
+		mFragmentView.setTag("BlockFragment");
 
 		Log.d(TAG, "Set base directory for block list file.");
 		mFileHandler.setBaseDir(getExternalFilesDir(null).toString());
@@ -103,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
 			@Override
 			public void onClick(View view) {
 
-				if(getSupportFragmentManager().findFragmentById(R.id.BlockFragment).isVisible()) {
+				if(mFragmentView.getTag().equalsIgnoreCase("BlockFragment")) {
 					Log.d(TAG, "Add layout for adding number to block list.");
 					LayoutInflater layoutinflater = getLayoutInflater();
 					View view1 = layoutinflater.inflate(R.layout.addnumber, null);
@@ -128,12 +139,12 @@ public class MainActivity extends AppCompatActivity {
 					Log.d(TAG, "Add layout for adding number to block list.");
 					LayoutInflater layoutinflater = getLayoutInflater();
 					View view1 = layoutinflater.inflate(R.layout.add_sms_pattern, null);
-					final EditText editText = (EditText)view1.findViewById(R.id.editText);
+					final EditText editText = (EditText)view1.findViewById(R.id.sms_edit_text);
 
 					Log.d(TAG, "Create and open alert dialog to input number.");
 					AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this, R.style.AddDialogTheme);
 					alertDialog.setTitle("Block a text. NOW!");
-					alertDialog.setMessage("Add a phrase of text you want to block.");
+					alertDialog.setMessage("Add a phrase of text you want to block. Do NOT use Enter key.");
 					alertDialog.setView(view1);
 					alertDialog.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 						@Override
@@ -181,11 +192,21 @@ public class MainActivity extends AppCompatActivity {
 		selectAll.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if(selectAll.isChecked()) {
-					DeleteAdapter.getInstance().selectAll();
+				if(mFragmentView.getTag().equalsIgnoreCase("BlockFragment")) {
+					if(selectAll.isChecked()) {
+						DeleteAdapter.getInstance().selectAll();
+					}
+					else if(!selectAll.isChecked()){
+						DeleteAdapter.getInstance().unselectAll();
+					}
 				}
-				else if(!selectAll.isChecked()){
-					DeleteAdapter.getInstance().unselectAll();
+				else {
+					if(selectAll.isChecked()) {
+						SmsAdapter.getInstance().selectAll();
+					}
+					else if(!selectAll.isChecked()){
+						SmsAdapter.getInstance().unselectAll();
+					}
 				}
 			}
 		});
@@ -195,28 +216,13 @@ public class MainActivity extends AppCompatActivity {
 			@Override
 			public void onClick(View v) {
 
-				if(getSupportFragmentManager().findFragmentById(R.id.BlockFragment).isVisible()) {
+				if(mFragmentView.getTag().equalsIgnoreCase("BlockFragment")) {
 					DeleteAdapter.getInstance().deleteList();
 					mFileHandler.putList(mBlockList.getList());
 				}
 				else {
 					SmsAdapter.getInstance().deleteList();
 					mSmsFileHandler.putList(mSmsBlockList.getList());
-				}
-			}
-		});
-
-		switchFragment = findViewById(R.id.switch_fragment);
-		switchFragment.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if(getSupportFragmentManager().findFragmentById(R.id.BlockFragment).isVisible()) {
-					Navigation.findNavController(v).navigate(R.id.action_BlockFragment_to_SmsFragment);
-					switchFragment.setImageResource(android.R.drawable.ic_menu_call);
-				}
-				else {
-					Navigation.findNavController(v).navigate(R.id.action_BlockFragment_to_SmsFragment);
-					switchFragment.setImageResource(android.R.drawable.ic_dialog_email);
 				}
 			}
 		});

@@ -21,8 +21,12 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.nidheesh.blockit.sms.SmsAdapter;
+import com.nidheesh.blockit.sms.SmsBlockList;
+import com.nidheesh.blockit.sms.SmsFileHandler;
 
 import java.util.List;
 
@@ -30,13 +34,20 @@ public class MainActivity extends AppCompatActivity {
 
 	private static final int PERMISSION_REQUEST_READ_PHONE_STATE = 0;
 	public static final String TAG = "BlockitLogs";
+
 	FileHandler mFileHandler = FileHandler.getInstance();
 	BlockList mBlockList;
+
+	SmsFileHandler mSmsFileHandler = SmsFileHandler.getInstance();
+	SmsBlockList mSmsBlockList;
+
 	FloatingActionButton fab;
 	ImageView confirm;
 	Toolbar toolbar;
 
 	CheckBox selectAll;
+
+	ImageView switchFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +68,13 @@ public class MainActivity extends AppCompatActivity {
 		Log.d(TAG, "Check if file exists.");
 		mFileHandler.checkFileCreated();
 		mBlockList = BlockList.getInstance();
+
+		Log.d(TAG, "Set base directory for SMS block list file.");
+		mSmsFileHandler.setBaseDir(getExternalFilesDir(null).toString());
+
+		Log.d(TAG, "Check if file exists.");
+		mSmsFileHandler.checkFileCreated();
+		mSmsBlockList = SmsBlockList.getInstance();
 
 		if(!isAccessibilityServiceEnabled(this, MyAccessibilityService.class))
 			Toast.makeText(this, "Enable Notification and Accessibility settings.",
@@ -85,25 +103,49 @@ public class MainActivity extends AppCompatActivity {
 			@Override
 			public void onClick(View view) {
 
-				Log.d(TAG, "Add layout for adding number to block list.");
-				LayoutInflater layoutinflater = getLayoutInflater();
-				View view1 = layoutinflater.inflate(R.layout.addnumber, null);
-				final EditText editText = (EditText)view1.findViewById(R.id.editText);
+				if(getSupportFragmentManager().findFragmentById(R.id.BlockFragment).isVisible()) {
+					Log.d(TAG, "Add layout for adding number to block list.");
+					LayoutInflater layoutinflater = getLayoutInflater();
+					View view1 = layoutinflater.inflate(R.layout.addnumber, null);
+					final EditText editText = (EditText)view1.findViewById(R.id.editText);
 
-				Log.d(TAG, "Create and open alert dialog to input number.");
-				AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this, R.style.AddDialogTheme);
-				alertDialog.setTitle("Block a number. NOW!");
-				alertDialog.setMessage("Add a number you want to block. Add \"*\" at the end if you want to block all the numbers having that prefix");
-				alertDialog.setView(view1);
-				alertDialog.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Log.d(TAG, "Adding number to the list : " + editText.getText());
-						mBlockList.addToList(String.valueOf(editText.getText()));
-					}
-				});
-				alertDialog.setNegativeButton("Cancel", null);
-				alertDialog.show();
+					Log.d(TAG, "Create and open alert dialog to input number.");
+					AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this, R.style.AddDialogTheme);
+					alertDialog.setTitle("Block a number. NOW!");
+					alertDialog.setMessage("Add a number you want to block. Add \"*\" at the end if you want to block all the numbers having that prefix");
+					alertDialog.setView(view1);
+					alertDialog.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							Log.d(TAG, "Adding number to the list : " + editText.getText());
+							mBlockList.addToList(String.valueOf(editText.getText()));
+						}
+					});
+					alertDialog.setNegativeButton("Cancel", null);
+					alertDialog.show();
+				}
+				else {
+					Log.d(TAG, "Add layout for adding number to block list.");
+					LayoutInflater layoutinflater = getLayoutInflater();
+					View view1 = layoutinflater.inflate(R.layout.add_sms_pattern, null);
+					final EditText editText = (EditText)view1.findViewById(R.id.editText);
+
+					Log.d(TAG, "Create and open alert dialog to input number.");
+					AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this, R.style.AddDialogTheme);
+					alertDialog.setTitle("Block a text. NOW!");
+					alertDialog.setMessage("Add a phrase of text you want to block.");
+					alertDialog.setView(view1);
+					alertDialog.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							Log.d(TAG, "Adding text to the list : " + editText.getText());
+							mSmsBlockList.addToList(String.valueOf(editText.getText()));
+						}
+					});
+					alertDialog.setNegativeButton("Cancel", null);
+					alertDialog.show();
+				}
+
 			}
 		});
 	}
@@ -152,8 +194,30 @@ public class MainActivity extends AppCompatActivity {
 		confirm.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				DeleteAdapter.getInstance().deleteList();
-				mFileHandler.putList(mBlockList.getList());
+
+				if(getSupportFragmentManager().findFragmentById(R.id.BlockFragment).isVisible()) {
+					DeleteAdapter.getInstance().deleteList();
+					mFileHandler.putList(mBlockList.getList());
+				}
+				else {
+					SmsAdapter.getInstance().deleteList();
+					mSmsFileHandler.putList(mSmsBlockList.getList());
+				}
+			}
+		});
+
+		switchFragment = findViewById(R.id.switch_fragment);
+		switchFragment.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(getSupportFragmentManager().findFragmentById(R.id.BlockFragment).isVisible()) {
+					Navigation.findNavController(v).navigate(R.id.action_BlockFragment_to_SmsFragment);
+					switchFragment.setImageResource(android.R.drawable.ic_menu_call);
+				}
+				else {
+					Navigation.findNavController(v).navigate(R.id.action_BlockFragment_to_SmsFragment);
+					switchFragment.setImageResource(android.R.drawable.ic_dialog_email);
+				}
 			}
 		});
 	}

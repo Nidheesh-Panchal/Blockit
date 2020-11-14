@@ -82,23 +82,27 @@ public class NotService extends NotificationListenerService {
 
 			if(title.length() > 8 && title.substring(0,8).equals("WhatsApp"))
 			{
+				exit();
 				return;
 			}
 
 			if(text.matches(".* messages from .* chats"))
 			{
+				exit();
 				return;
 			}
 
 			if(title.equalsIgnoreCase("WhatsApp") &&
 					text.matches("Checking for new messages"))
 			{
+				exit();
 				return;
 			}
 
 			long millis = sbn.getNotification().when;
 
 			if(System.currentTimeMillis() - millis > 3000 ){
+				exit();
 				return;
 			}
 
@@ -155,6 +159,7 @@ public class NotService extends NotificationListenerService {
 
 			if(text.endsWith("liked your post."))
 			{
+				exit();
 				return;
 			}
 
@@ -180,6 +185,17 @@ public class NotService extends NotificationListenerService {
 				Log.e(TAG, "Exception : ", e);
 			}
 		}
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		exit();
+	}
+
+	private void exit() {
+
+		Log.d(TAG, "Notification service stop self.");
 		stopSelf();
 	}
 

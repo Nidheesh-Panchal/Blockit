@@ -5,9 +5,11 @@ import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import android.view.accessibility.AccessibilityManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
@@ -58,10 +61,6 @@ public class MainActivity extends AppCompatActivity {
 		mFileHandler.checkFileCreated();
 		mBlockList = BlockList.getInstance();
 
-		if(!isAccessibilityServiceEnabled(this, MyAccessibilityService.class))
-			Toast.makeText(this, "Enable Notification and Accessibility settings.",
-					Toast.LENGTH_LONG).show();
-
 		Log.d(TAG, "Set listener for action bar.");
 		listener();
 
@@ -76,6 +75,22 @@ public class MainActivity extends AppCompatActivity {
 						Manifest.permission.ANSWER_PHONE_CALLS, Manifest.permission.MODIFY_PHONE_STATE};
 				requestPermissions(permissions, PERMISSION_REQUEST_READ_PHONE_STATE);
 			}
+		}
+
+		if(!isAccessibilityServiceEnabled(this, MyAccessibilityService.class)) {
+			Toast.makeText(this, "Enable Accessibility settings.",
+					Toast.LENGTH_SHORT).show();
+			Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(intent);
+		}
+
+		if(!isNotificationServiceEnabled(this)) {
+			Toast.makeText(this, "Enable Notification settings.",
+					Toast.LENGTH_SHORT).show();
+			Intent intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
+			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(intent);
 		}
 
 		Log.d(TAG, "Add floating action button and its listener.");
@@ -121,16 +136,49 @@ public class MainActivity extends AppCompatActivity {
 	}*/
 
 	public static boolean isAccessibilityServiceEnabled(Context context, Class<? extends AccessibilityService> service) {
-		AccessibilityManager am = (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
+		/*AccessibilityManager am = (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
 		List<AccessibilityServiceInfo> enabledServices = am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
-
+		Log.d(TAG, "Checking for accessibility permissions.");
+		Log.d(TAG, "Accessibility Manager : " + am);
+		Log.d(TAG, "Enable services : " + enabledServices);
 		for (AccessibilityServiceInfo enabledService : enabledServices) {
 			ServiceInfo enabledServiceInfo = enabledService.getResolveInfo().serviceInfo;
+			Log.d(TAG, enabledServiceInfo.name);
+			Log.d(TAG, service.getName());
 			if (enabledServiceInfo.packageName.equals(context.getPackageName()) && enabledServiceInfo.name.equals(service.getName()))
+			{
 				return true;
+			}
 		}
 
+		return false;*/
+
+		/*
+		Using different accessibility settings checker
+		 */
+		int enabled = 0;
+		try {
+			enabled = Settings.Secure.getInt(
+					context.getApplicationContext().getContentResolver(),
+					Settings.Secure.ACCESSIBILITY_ENABLED);
+		} catch (Settings.SettingNotFoundException e) {
+			e.printStackTrace();
+			Toast.makeText(context, "Error occured while looking for accessibility service.", Toast.LENGTH_SHORT).show();
+			return true;
+		}
+		if(enabled == 1) {
+			return true;
+		}
 		return false;
+	}
+
+	public static boolean isNotificationServiceEnabled(Context context) {
+
+		String notificationListenerString = Settings.Secure.getString(context.getContentResolver(),"enabled_notification_listeners");
+		if (notificationListenerString == null || !notificationListenerString.contains(context.getPackageName())) {
+			return false;
+		}
+		return true;
 	}
 
 	private void listener() {

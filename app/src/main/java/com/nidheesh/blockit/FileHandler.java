@@ -18,15 +18,15 @@ class FileHandler {
 
 	String fileName = "Block List.txt";
 
-	private static FileHandler mList;
+	private static FileHandler sFileHandler;
 
 	public static FileHandler getInstance() {
-		if(mList == null) {
-			mList = new FileHandler();
+		if(sFileHandler == null) {
+			sFileHandler = new FileHandler();
 
 		}
 
-		return mList;
+		return sFileHandler;
 	}
 
 	public void setBaseDir(String dir) {

@@ -77,22 +77,6 @@ public class MainActivity extends AppCompatActivity {
 			}
 		}
 
-		if(!isAccessibilityServiceEnabled(this, MyAccessibilityService.class)) {
-			Toast.makeText(this, "Enable Accessibility settings.",
-					Toast.LENGTH_SHORT).show();
-			Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			startActivity(intent);
-		}
-
-		if(!isNotificationServiceEnabled(this)) {
-			Toast.makeText(this, "Enable Notification settings.",
-					Toast.LENGTH_SHORT).show();
-			Intent intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
-			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			startActivity(intent);
-		}
-
 		Log.d(TAG, "Add floating action button and its listener.");
 		fab = findViewById(R.id.fab);
 		fab.setOnClickListener(new View.OnClickListener() {
@@ -120,65 +104,6 @@ public class MainActivity extends AppCompatActivity {
 				alertDialog.show();
 			}
 		});
-	}
-
-	//TODO: Unable to prompt up the settings from here. Find something to do this.
-	/*public void requestPermission() {
-		Intent requestIntent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-		requestIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		startActivity(requestIntent);
-	}
-	public void accessibility()
-	{
-		Intent access = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-		access.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		startActivity(access);
-	}*/
-
-	public static boolean isAccessibilityServiceEnabled(Context context, Class<? extends AccessibilityService> service) {
-		/*AccessibilityManager am = (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
-		List<AccessibilityServiceInfo> enabledServices = am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
-		Log.d(TAG, "Checking for accessibility permissions.");
-		Log.d(TAG, "Accessibility Manager : " + am);
-		Log.d(TAG, "Enable services : " + enabledServices);
-		for (AccessibilityServiceInfo enabledService : enabledServices) {
-			ServiceInfo enabledServiceInfo = enabledService.getResolveInfo().serviceInfo;
-			Log.d(TAG, enabledServiceInfo.name);
-			Log.d(TAG, service.getName());
-			if (enabledServiceInfo.packageName.equals(context.getPackageName()) && enabledServiceInfo.name.equals(service.getName()))
-			{
-				return true;
-			}
-		}
-
-		return false;*/
-
-		/*
-		Using different accessibility settings checker
-		 */
-		int enabled = 0;
-		try {
-			enabled = Settings.Secure.getInt(
-					context.getApplicationContext().getContentResolver(),
-					Settings.Secure.ACCESSIBILITY_ENABLED);
-		} catch (Settings.SettingNotFoundException e) {
-			e.printStackTrace();
-			Toast.makeText(context, "Error occured while looking for accessibility service.", Toast.LENGTH_SHORT).show();
-			return true;
-		}
-		if(enabled == 1) {
-			return true;
-		}
-		return false;
-	}
-
-	public static boolean isNotificationServiceEnabled(Context context) {
-
-		String notificationListenerString = Settings.Secure.getString(context.getContentResolver(),"enabled_notification_listeners");
-		if (notificationListenerString == null || !notificationListenerString.contains(context.getPackageName())) {
-			return false;
-		}
-		return true;
 	}
 
 	private void listener() {

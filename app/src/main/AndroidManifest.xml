@@ -22,7 +22,7 @@
 		</activity>
 
 		<receiver android:name=".CallReceiver" >
-			<intent-filter>
+			<intent-filter android:priority="999">
 				<action android:name="android.intent.action.PHONE_STATE" />
 			</intent-filter>
 		</receiver>

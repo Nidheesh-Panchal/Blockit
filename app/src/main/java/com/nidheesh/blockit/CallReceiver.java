@@ -2,13 +2,16 @@ package com.nidheesh.blockit;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.os.Environment;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
 public class CallReceiver extends BroadcastReceiver {
 	public static final String TAG = "BlockitLogs";
 	String number;
+	String baseDir = Environment.getExternalStorageDirectory().getPath() + "/Android/data/";
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -29,7 +32,9 @@ public class CallReceiver extends BroadcastReceiver {
 				try {
 					if (number!=null) {
 						Log.d(TAG, "Call from : " + number);
-						if(shouldBlock())
+						ContextWrapper contextWrapper = new ContextWrapper(context);
+
+						if(shouldBlock(contextWrapper.getPackageName() + "/files"))
 						{
 							Log.d(TAG, "Blocking number.");
 							CallActions callActions = new CallActions();
@@ -52,7 +57,11 @@ public class CallReceiver extends BroadcastReceiver {
 		}
 	}
 
-	private Boolean shouldBlock() {
+	private Boolean shouldBlock(String path) {
+		FileHandler fileHandler = FileHandler.getInstance();
+		Log.d(TAG, "Setting path to file handler : " + baseDir + path);
+		fileHandler.setBaseDir(baseDir + path);
+
 		BlockList blockList = BlockList.getInstance();
 
 		for(String line:blockList.getList()) {

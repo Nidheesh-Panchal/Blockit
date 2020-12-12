@@ -91,9 +91,18 @@ class DeleteAdapter extends RecyclerView.Adapter<DeleteAdapter.ViewHolder>{
 		holder.showBlockedDetails(blockedCall);
 
 		if (allUnselect)
+		{
+			Log.d(TAG, "Unselect : " + blockedCall);
+			map.put(blockedCall,false);
 			holder.mCheckBox.setChecked(false);
+		}
 		else if(isSelectedAll)
+		{
+			Log.d(TAG, "Selected : " + blockedCall);
 			holder.mCheckBox.setChecked(true);
+			map.put(blockedCall,true);
+		}
+
 		if(position == getItemCount() - 1) {
 			isSelectedAll = false;
 			allUnselect = false;
@@ -119,6 +128,7 @@ class DeleteAdapter extends RecyclerView.Adapter<DeleteAdapter.ViewHolder>{
 
 			blockCallTextView=(TextView)itemView.findViewById(R.id.textdelView);
 			mCheckBox = (CheckBox)itemView.findViewById(R.id.checkBox);
+			Log.d(TAG, "Setting up listener");
 			mCheckBox.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {

@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
 			public void onClick(View v) {
 				DeleteAdapter.getInstance().deleteList();
 				mFileHandler.putList(mBlockList.getList());
+				selectAll.setChecked(false);
 			}
 		});
 	}
